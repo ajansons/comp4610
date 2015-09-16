@@ -1,4 +1,7 @@
 import java.awt.DisplayMode;
+import java.io.File;
+import java.io.IOException;
+
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
@@ -6,8 +9,12 @@ import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.glu.GLU;
-import javax.swing.JFrame;
 import com.jogamp.opengl.util.FPSAnimator;
+import com.jogamp.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.TextureIO;
+
+import javax.swing.JFrame;
+
 public class ScreenSaverOGL implements GLEventListener{
 
 	/*  Original code from http://www.tutorialspoint.com/jogl/jogl_3d_graphics.htm
@@ -67,6 +74,9 @@ public class ScreenSaverOGL implements GLEventListener{
 	
 	private void makeCube(float r, float g, float b, GLAutoDrawable drawable){
 		final GL2 gl = drawable.getGL().getGL2();
+		
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, texture);
+		
 		gl.glBegin( GL2.GL_QUADS ); // Start Drawing The Cube
 		
 		// Set colour
@@ -90,20 +100,17 @@ public class ScreenSaverOGL implements GLEventListener{
 		gl.glVertex3f( -1.0f, -1.0f, 1.0f ); // Bottom Left Of The Quad 
 		gl.glVertex3f( 1.0f, -1.0f, 1.0f ); // Bottom Right Of The Quad 
 		
-		
 		// Side Face
 		gl.glVertex3f( 1.0f, -1.0f, -1.0f ); // Bottom Left Of The Quad 
 		gl.glVertex3f( -1.0f, -1.0f, -1.0f ); // Bottom Right Of The Quad
 		gl.glVertex3f( -1.0f, 1.0f, -1.0f ); // Top Right Of The Quad (Back)
 		gl.glVertex3f( 1.0f, 1.0f, -1.0f ); // Top Left Of The Quad (Back)
 		
-		
 		// Side Face
 		gl.glVertex3f( -1.0f, 1.0f, 1.0f ); // Top Right Of The Quad (Left)
 		gl.glVertex3f( -1.0f, 1.0f, -1.0f ); // Top Left Of The Quad (Left)
 		gl.glVertex3f( -1.0f, -1.0f, -1.0f ); // Bottom Left Of The Quad 
 		gl.glVertex3f( -1.0f, -1.0f, 1.0f ); // Bottom Right Of The Quad 
-		
 		
 		// Side Face
 		gl.glVertex3f( 1.0f, 1.0f, -1.0f ); // Top Right Of The Quad (Right)
@@ -119,7 +126,7 @@ public class ScreenSaverOGL implements GLEventListener{
 			
 			//Draw the bristles
 			gl.glPushMatrix();
-			  gl.glScalef(1f, 1.5f, 2f);
+			  gl.glScalef(1f, 1.5f, 1.7f);
 			  makeCube(1f,1f,1f, drawable);
 			gl.glPopMatrix();
 			
@@ -160,26 +167,29 @@ public class ScreenSaverOGL implements GLEventListener{
 	public static DisplayMode dm, dm_old;
 	private GLU glu = new GLU();
 	private float rquad=0.0f;
+	private int texture;
 	@Override
 	public void display( GLAutoDrawable drawable ) {
 		final GL2 gl = drawable.getGL().getGL2();
 		gl.glClear( GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT );
 		
+		float dist = 10f;
 		
-		
-		drawToothbrush(0f, 0f, -15f, drawable);
-		
+		drawToothbrush(-dist, -dist, -50f, drawable);
+		drawToothbrush(dist, dist, -50f, drawable);
+		drawToothbrush(-dist, dist, -50f, drawable);
+		drawToothbrush(dist, -dist, -50f, drawable);
 		
 		/*
 		//Draw some rotating cubes
-		drawCube( 5f,  5f, -20f, drawable);
-		drawCube(-5f, -5f, -20f, drawable);
-		drawCube( 5f, -5f, -20f, drawable);
-		drawCube(-5f,  5f, -20f, drawable);
+		drawCube( dist,  dist, -20f, drawable);
+		drawCube(-dist, -dist, -20f, drawable);
+		drawCube( dist, -dist, -20f, drawable);
+		drawCube(-dist, dist, -20f, drawable);
 		*/
 		
 		gl.glFlush();
-		rquad -=0.15f;
+		rquad -=0.90f;
 	}
 	@Override
 	public void dispose( GLAutoDrawable drawable ) {
@@ -194,6 +204,17 @@ public class ScreenSaverOGL implements GLEventListener{
 		gl.glEnable( GL2.GL_DEPTH_TEST );
 		gl.glDepthFunc( GL2.GL_LEQUAL );
 		gl.glHint( GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST );
+		gl.glEnable(GL2.GL_TEXTURE_2D);
+		try
+		{
+			File im = new File("C:/uni/comp4610/lab5/src/colgate.png");
+			Texture t = TextureIO.newTexture(im, true);
+			texture = t.getTextureObject(gl);
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
 		
 		//Put the cube into list 1
 		gl.glNewList(1, GL2.GL_COMPILE);
@@ -215,7 +236,7 @@ public class ScreenSaverOGL implements GLEventListener{
 		gl.glViewport( 0, 0, width, height );
 		gl.glMatrixMode( GL2.GL_PROJECTION );
 		gl.glLoadIdentity();
-		glu.gluPerspective( 45.0f, h, 1.0, 20.0 );
+		glu.gluPerspective( 45.0f, h, 1.0, 500.0 );
 		gl.glMatrixMode( GL2.GL_MODELVIEW );
 		gl.glLoadIdentity();
 	}
@@ -224,8 +245,8 @@ public class ScreenSaverOGL implements GLEventListener{
 		GLCapabilities capabilities = new GLCapabilities( profile );
 		// The canvas 
 		final GLCanvas glcanvas = new GLCanvas( capabilities );
-		ScreenSaverOGL cube = new ScreenSaverOGL();
-		glcanvas.addGLEventListener( cube );
+		ScreenSaverOGL screen = new ScreenSaverOGL();
+		glcanvas.addGLEventListener( screen );
 		glcanvas.setSize( 800, 800 );
 		final JFrame frame = new JFrame ( "COMP4610 Lab 5" );
 		frame.getContentPane().add( glcanvas );

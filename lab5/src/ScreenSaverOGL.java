@@ -121,6 +121,60 @@ public class ScreenSaverOGL implements GLEventListener{
 		gl.glEnd(); // Done Drawing The Quad
 	}
 	
+	private void makeCubeTextured(float r, float g, float b, GLAutoDrawable drawable){
+		final GL2 gl = drawable.getGL().getGL2();
+		
+		gl.glBegin( GL2.GL_QUADS ); // Start Drawing The Cube
+		
+		// Set colour
+		gl.glColor3f( r,g,b );   //red color
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, texture);
+		
+		// Top face
+		gl.glVertex3f( 1.0f, 1.0f, -1.0f ); // Top Right Of The Quad (Top)
+		gl.glVertex3f( -1.0f, 1.0f, -1.0f); // Top Left Of The Quad (Top)
+		gl.glVertex3f( -1.0f, 1.0f, 1.0f ); // Bottom Left Of The Quad (Top)
+		gl.glVertex3f( 1.0f, 1.0f, 1.0f ); // Bottom Right Of The Quad (Top)
+		
+		//Set the colour to white so the logo doesn't get coloured
+		gl.glColor3f(1.0f, 1.0f, 1.0f);
+		
+		// Bottom Face
+		gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f( 1.0f, -1.0f, 1.0f ); // Top Right Of The Quad 
+		gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f( -1.0f, -1.0f, 1.0f ); // Top Left Of The Quad 
+		gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f( -1.0f, -1.0f, -1.0f ); // Bottom Left Of The Quad 
+		gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f( 1.0f, -1.0f, -1.0f ); // Bottom Right Of The Quad
+		
+		//Set the colour back to whatever it was 
+		gl.glColor3f( r,g,b );
+		
+		// Side Face
+		gl.glVertex3f( 1.0f, 1.0f, 1.0f ); // Top Right Of The Quad (Front)
+		gl.glVertex3f( -1.0f, 1.0f, 1.0f ); // Top Left Of The Quad (Front)
+		gl.glVertex3f( -1.0f, -1.0f, 1.0f ); // Bottom Left Of The Quad 
+		gl.glVertex3f( 1.0f, -1.0f, 1.0f ); // Bottom Right Of The Quad 
+		
+		// Side Face
+		gl.glVertex3f( 1.0f, -1.0f, -1.0f ); // Bottom Left Of The Quad 
+		gl.glVertex3f( -1.0f, -1.0f, -1.0f ); // Bottom Right Of The Quad
+		gl.glVertex3f( -1.0f, 1.0f, -1.0f ); // Top Right Of The Quad (Back)
+		gl.glVertex3f( 1.0f, 1.0f, -1.0f ); // Top Left Of The Quad (Back)
+		
+		// Side Face
+		gl.glVertex3f( -1.0f, 1.0f, 1.0f ); // Top Right Of The Quad (Left)
+		gl.glVertex3f( -1.0f, 1.0f, -1.0f ); // Top Left Of The Quad (Left)
+		gl.glVertex3f( -1.0f, -1.0f, -1.0f ); // Bottom Left Of The Quad 
+		gl.glVertex3f( -1.0f, -1.0f, 1.0f ); // Bottom Right Of The Quad 
+		
+		// Side Face
+		gl.glVertex3f( 1.0f, 1.0f, -1.0f ); // Top Right Of The Quad (Right)
+		gl.glVertex3f( 1.0f, 1.0f, 1.0f ); // Top Left Of The Quad 
+		gl.glVertex3f( 1.0f, -1.0f, 1.0f ); // Bottom Left Of The Quad 
+		gl.glVertex3f( 1.0f, -1.0f, -1.0f ); // Bottom Right Of The Quad 
+		
+		gl.glEnd(); // Done Drawing The Quad
+	}
+	
 	private void makeToothbrush(GLAutoDrawable drawable){
 		final GL2 gl = drawable.getGL().getGL2();
 			
@@ -134,7 +188,7 @@ public class ScreenSaverOGL implements GLEventListener{
 			gl.glPushMatrix();
 			  gl.glTranslatef(0, -1.5f, 0);
 			  gl.glScalef(1.5f, 0.5f, 3f);
-			  makeCube(1f,0f,0f, drawable);
+			  makeCubeTextured(1f,0f,0f, drawable);
 			gl.glPopMatrix();
 			
 			//Draw the handle
@@ -223,6 +277,7 @@ public class ScreenSaverOGL implements GLEventListener{
 		
 		//Put the toothbrush into list 2
 		gl.glNewList(2, GL2.GL_COMPILE);
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, texture);
 		makeToothbrush(drawable);
 		gl.glEndList();
 		

@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Scene Eric McCreath 2009
@@ -23,7 +24,14 @@ public class Scene extends ArrayList<Sphere> {
 			}
 		}
 		if (hit != null) {
-			return hit.color;
+			
+			//return hit.color.brighter();
+			//return hit.color;
+			Random ran = new Random();
+			
+			return new Color(ran.nextFloat(), ran.nextFloat(), ran.nextFloat());
+			
+			
 		} else {
 			return background;
 		}
